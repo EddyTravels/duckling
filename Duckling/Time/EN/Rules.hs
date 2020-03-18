@@ -123,6 +123,24 @@ ruleYYYYNamedMonthDOM = Rule
       _ -> Nothing
   }
 
+ruleNamedMonthDOMYYYY :: Rule
+ruleNamedMonthDOMYYYY = Rule
+  { name = "<named-month> <day-of-month> <year>"
+  , pattern =
+    [ Predicate isAMonth
+    , regex "\\s*?(\\-|/|_+|and|to|th?ru|through|(un)?til(l)?)\\s*?|\\s+"
+    , Predicate isDOMValue
+    , regex "\\s*?(\\-|/|_+|and|to|th?ru|through|(un)?til(l)?)\\s*?|\\s+"
+    , Predicate $ isIntegerBetween (2000) 3000
+    ]
+  , prod = \tokens -> case tokens of
+      (Token Time td:_:td2:_:token:_) -> do
+        intVal <- getIntValue token
+        dom <- intersectDOM td td2
+        Token Time . notLatent <$> intersect dom (year intVal)
+      _ -> Nothing
+  }
+
 ruleAbsorbOnDay :: Rule
 ruleAbsorbOnDay = Rule
   { name = "on <day>"
@@ -1106,13 +1124,31 @@ rulePrecisionTOD = Rule
       _ -> Nothing
   }
 
+ruleIntervalDOMDOM :: Rule
+ruleIntervalDOMDOM = Rule
+  { name = "<day-of-month> (number) to <day-of-month> (number) (interval)"
+  , pattern =
+    [ Predicate isDOMInteger
+    , regex "to"
+    , Predicate isDOMInteger
+    ]
+  , prod = \tokens -> case tokens of
+      (token1:_:token2:_) -> do
+        n <- getIntValue token1
+        m <- getIntValue token2
+        start <- intersect (dayOfMonth n) $ cycleNth TG.Month 0
+        end <- intersect (dayOfMonth m) $ cycleNth TG.Month 0
+        Token Time . mkLatent <$> interval TTime.Closed start end
+      _ -> Nothing
+  }
+
 ruleIntervalMonthDDDD :: Rule
 ruleIntervalMonthDDDD = Rule
   { name = "<month> dd-dd (interval)"
   , pattern =
     [ Predicate isAMonth
     , Predicate isDOMValue
-    , regex "\\-|/|to|th?ru|through|(un)?til(l)?"
+    , regex "\\s*?(\\-|/|_+|and|to|th?ru|through|(un)?til(l)?)\\s*?|\\s+"
     , Predicate isDOMValue
     ]
   , prod = \tokens -> case tokens of
@@ -1132,7 +1168,7 @@ ruleIntervalDDDDMonth = Rule
   { name = "dd-dd <month> (interval)"
   , pattern =
     [ Predicate isDOMValue
-    , regex "\\-|to|th?ru|through|(un)?til(l)?"
+    , regex "\\s*?(\\-|/|_+|and|to|th?ru|through|(un)?til(l)?)\\s*?|\\s+"
     , Predicate isDOMValue
     , Predicate isAMonth
     ]
@@ -1148,6 +1184,27 @@ ruleIntervalDDDDMonth = Rule
       _ -> Nothing
   }
 
+ruleIntervalDDMonthDD :: Rule
+ruleIntervalDDMonthDD = Rule
+  { name = " dd <month> - dd (interval)"
+  , pattern =
+    [ Predicate isDOMValue
+    , Predicate isAMonth
+    , regex "\\-|/|_+|and|to|th?ru|through|(un)?til(l)?"
+    , Predicate isDOMValue
+    ]
+  , prod = \tokens -> case tokens of
+      (token1:
+       Token Time td:
+       _:
+       token2:
+       _) -> do
+        dom1 <- intersectDOM td token1
+        dom2 <- intersectDOM td token2
+        Token Time <$> interval TTime.Closed dom1 dom2
+      _ -> Nothing
+  }
+
 ruleIntervalFromMonthDDDD :: Rule
 ruleIntervalFromMonthDDDD = Rule
   { name = "from <month> dd-dd (interval)"
@@ -1155,7 +1212,7 @@ ruleIntervalFromMonthDDDD = Rule
     [ regex "from|between"
     , Predicate isAMonth
     , Predicate isDOMValue
-    , regex "\\-|and|to|th?ru|through|(un)?til(l)?"
+    , regex "\\s*?(\\-|/|_+|and|to|th?ru|through|(un)?til(l)?)\\s*?|\\s+"
     , Predicate isDOMValue
     ]
   , prod = \tokens -> case tokens of
@@ -1225,7 +1282,7 @@ ruleIntervalDash = Rule
   { name = "<datetime> - <datetime> (interval)"
   , pattern =
     [ Predicate isNotLatent
-    , regex "\\-|and|to|th?ru|through|(un)?til(l)?"
+    , regex "\\-|and|to|or|th?ru|through|(un)?til(l)?"
     , Predicate isNotLatent
     ]
   , prod = \tokens -> case tokens of
@@ -1256,7 +1313,7 @@ ruleIntervalFrom = Rule
   , pattern =
     [ regex "from"
     , dimension Time
-    , regex "\\-|to|th?ru|through|(un)?til(l)?"
+    , regex "\\-|to|or|th?ru|through|(un)?til(l)?"
     , dimension Time
     ]
   , prod = \tokens -> case tokens of
@@ -2514,6 +2571,7 @@ rules =
   , ruleYYYYNamedMonth
   , ruleYYYYMM
   , ruleYYYYNamedMonthDOM
+  , ruleNamedMonthDOMYYYY
   , ruleYYYYMMDD
   , ruleMMYYYY
   , ruleNoonMidnightEOD
@@ -2529,11 +2587,13 @@ rules =
   , ruleWeek
   , ruleTODPrecision
   , rulePrecisionTOD
+  , ruleIntervalDOMDOM
   , ruleIntervalFromMonthDDDD
   , ruleIntervalFromDDDDMonth
   , ruleIntervalFromDDDDOfMonth
   , ruleIntervalMonthDDDD
   , ruleIntervalDDDDMonth
+  , ruleIntervalDDMonthDD
   , ruleIntervalDash
   , ruleIntervalSlash
   , ruleIntervalFrom

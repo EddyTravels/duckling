@@ -157,6 +157,9 @@ latentCorpus = (testContext, testOptions {withLatent = True}, xs)
       , examples (datetimeInterval ((2013, 2, 12, 0, 0, 0), (2013, 2, 17, 0, 0, 0)) Day)
                  [ "the week"
                  ]
+      , examples (datetimeInterval ((2013, 2, 13, 0, 0, 0), (2013, 2, 16, 0, 0, 0)) Day)
+                 [ "13 to 15"
+                 ]
       ]
 
 diffContext :: Context
@@ -246,6 +249,7 @@ allExamples = concat
              ]
   , examples (datetime (2015, 3, 3, 0, 0, 0) Day)
              [ "march 3 2015"
+             , "march 3-2015"
              , "march 3rd 2015"
              , "march third 2015"
              , "3/3/2015"
@@ -1038,6 +1042,12 @@ allExamples = concat
              [ "next 3 years"
              , "next three years"
              ]
+  , examples (datetimeInterval ((2013, 4, 1, 0, 0, 0), (2013, 10, 1, 0, 0, 0)) Month)
+             [ "April to September"
+             , "April and September"
+             , "April or September"
+             , "April - September"
+             ]
   , examples (datetimeInterval ((2013, 7, 13, 0, 0, 0), (2013, 7, 16, 0, 0, 0)) Day)
              [ "July 13-15"
              , "July 13 to 15"
@@ -1045,11 +1055,26 @@ allExamples = concat
              , "July 13 through 15"
              , "July 13 - July 15"
              , "July 13 /15"
+             , "July 13_15"
+             , "July 13_ 15"
+             , "July 13 _15"
+             , "July 13 _ 15"
+             , "July 13__15"
+             , "July 13 15"
+             , "July 13  15"
+             , "13_15 July"
+             , "13 15 July"
+             , "13  15 July"
              ]
   , examples (datetimeInterval ((2013, 7, 13, 0, 0, 0), (2013, 7, 16, 0, 0, 0)) Day)
              [ "from July 13-15"
+             , "from July 13_15"
+             , "from July 13 15"
              , "between July 13 and 15"
              , "between July 13-15"
+             , "between July 13_15"
+             , "between July 13 15"
+             , "13 July to 15"
              , "from 13 to 15 July"
              , "from 13th to 15th July"
              , "from the 13 to 15 July"
