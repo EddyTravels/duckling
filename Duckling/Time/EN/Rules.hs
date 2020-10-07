@@ -192,7 +192,7 @@ ruleAbsorbCommaTOD = Rule
 ruleInstants :: [Rule]
 ruleInstants = mkRuleInstants
   [ ("right now"    , TG.Second, 0  , "((just|right)\\s*)now|immediately")
-  , ("today"        , TG.Day   , 0  , "todays?|(at this time)"           )
+  , ("today"        , TG.Day   , 0  , "todays?|(at this time)|toni(ght|gth|te)s?"   )
   , ("tomorrow"     , TG.Day   , 1  , "(tmrw?|tomm?or?rows?)"            )
   , ("yesterday"    , TG.Day   , - 1, "yesterdays?"                      )
   ]
@@ -2579,7 +2579,7 @@ rules =
   , ruleEarlyMorning
   , rulePODIn
   , rulePODThis
-  , ruleTonight
+  -- , ruleTonight
   , ruleAfterPartofday
   , ruleTimePOD
   , rulePODofTime

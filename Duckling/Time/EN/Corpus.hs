@@ -187,6 +187,7 @@ allExamples = concat
   , examples (datetime (2013, 2, 12, 0, 0, 0) Day)
              [ "today"
              , "at this time"
+             , "tonight"
              ]
   , examples (datetime (2013, 2, 1, 0, 0, 0) Month)
              [ "2/2013"
@@ -601,12 +602,16 @@ allExamples = concat
              [ "a quarter past 8pm"
              , "for a quarter past 8pm"
              ]
-  , examples (datetime (2013, 2, 12, 20, 0, 0) Hour)
+  , examples (datetime (2013, 2, 12, 8, 0, 0) Hour)
              [ "8 tonight"
              , "eight tonight"
-             , "8 this evening"
+             ]
+  , examples (datetime (2013, 2, 12, 20, 0, 0) Hour)
+             [ "8 this evening"
              , "at 8 in the evening"
              , "in the evening at eight"
+             --, "8 tonight"
+             --, "eight tonight"
              ]
   , examples (datetime (2013, 9, 20, 19, 30, 0) Minute)
              [ "at 7:30 PM on Fri, Sep 20"
@@ -946,7 +951,7 @@ allExamples = concat
   , examples (datetimeInterval ((2013, 2, 12, 18, 0, 0), (2013, 2, 13, 0, 0, 0)) Hour)
              [ "this evening"
              , "today evening"
-             , "tonight"
+             --, "tonight"
              ]
   , examples (datetimeInterval ((2013, 2, 9, 0, 0, 0), (2013, 2, 11, 0, 0, 0)) Day)
              [ "this past weekend"
@@ -972,10 +977,10 @@ allExamples = concat
              , "monday early morning"
              , "monday in the early hours of the morning"
              ]
-  , examples (datetimeInterval ((2013, 2, 12, 21, 0, 0), (2013, 2, 13, 0, 0, 0)) Hour)
-             [ "late tonight"
-             , "late tonite"
-             ]
+  --, examples (datetimeInterval ((2013, 2, 12, 21, 0, 0), (2013, 2, 13, 0, 0, 0)) Hour)
+  --           [ "late tonight"
+  --           , "late tonite"
+  --           ]
   , examples (datetimeInterval ((2013, 2, 15, 4, 0, 0), (2013, 2, 15, 12, 0, 0)) Hour)
              [ "february the 15th in the morning"
              , "15 of february in the morning"
@@ -1340,7 +1345,7 @@ allExamples = concat
   , examples (datetime (2013, 2, 13, 1, 50, 0) Minute)
              [ "tomorrow at 150ish"
              ]
-  , examples (datetime (2013, 2, 12, 23, 0, 0) Hour)
+  , examples (datetime (2013, 2, 12, 11, 0, 0) Hour)
              [ "tonight at 11"
              ]
   , examples (datetime (2013, 2, 12, 4, 23, 0) Minute)
